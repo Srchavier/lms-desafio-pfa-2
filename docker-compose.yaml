@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: pfa-mysql
+    image: mysql:8.0.26
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+      - ./mysql/dbdata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - backend_mysql
+  
+  backend:
+    container_name: pfabackend
+    entrypoint: dockerize -wait tcp://mysql:3306 -timeout 40s ./.docker/entrypoint.sh
+    build: 
+      context: ./pfa-backend
+      dockerfile: Dockerfile
+      #dockerfile: Dockerfile.dev
+    networks:
+      - backend_mysql
+      - backend_nginx
+    depends_on:
+      - mysql
+  
+  nginx:
+    container_name: nginx
+    build: ./pfa-nginx-desafio
+    ports:
+      - 8080:80
+    networks:
+      - backend_nginx
+    depends_on:
+      - backend
+
+networks:
+  backend_mysql:
+    driver: bridge
+  backend_nginx:
+    driver: bridge
