@@ -29,7 +29,7 @@ services:
     container_name: nginx
     build: ./pfa-nginx-desafio
     ports:
-      - 8080:80
+      - 8000:80
     networks:
       - backend_nginx
     depends_on:
