@@ -9,12 +9,14 @@ services:
       - ./mysql/dbdata:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
     networks:
       - backend_mysql
   
   backend:
     container_name: pfabackend
-    entrypoint: dockerize -wait tcp://mysql:3306 -timeout 40s ./.docker/entrypoint.sh
+    entrypoint: dockerize -wait tcp://pfa-mysql:3306 -timeout 40s ./.docker/entrypoint.sh
     build: 
       context: ./pfa-backend
       dockerfile: Dockerfile
